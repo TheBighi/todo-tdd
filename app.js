@@ -5,6 +5,15 @@ const mongodd = require('./mongodb/mongodb.connect')
 
 mongodd.connect();
 
+app.use((req, res, next) => {
+    let data = '';
+    req.on('data', chunk => data += chunk);
+    req.on('end', () => {
+        if (data) console.log('RAW BODY:', data);
+    });
+    next();
+});
+
 app.use(express.json());
 
 app.use('/todos', todoRoutes);
