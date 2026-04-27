@@ -38,8 +38,48 @@ const getTodoById = async (req, res, next) => {
     }
 }
 
+const updateTodo = async (req, res, next) => {
+    try {
+        const updatedTodo = await TodoModel.findByIdAndUpdate(
+            req.params.todoId,
+            req.body,
+            { new: true, useFindAndModify: false }
+        );
+        if (updatedTodo) {
+            return res.status(200).json(updatedTodo);
+        } else {
+            res.status(404).send();
+        }
+    } catch (error) {
+        if (error.name === 'CastError') {
+            return res.status(404).send();
+        }
+        next(error);
+    }
+};
+
+const findByIdAndDelete = async (req, res, next) => {
+    try {
+        const TodoDeleted = await TodoModel.findByIdAndDelete(req.params.todoId)
+        if (TodoDeleted) {
+            return res.status(200).json(TodoDeleted)
+        }
+        else{
+            return res.status(404).send()
+        }
+    }
+    catch(err){
+        if (err.name == 'CastError') {
+            return res.status(404).send()
+        }
+        next(err);
+    }
+}
+
 module.exports = {
     createTodo,
     getTodos,
-    getTodoById
+    getTodoById,
+    updateTodo,
+    findByIdAndDelete
 }
