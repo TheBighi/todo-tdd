@@ -6,13 +6,17 @@ const allTodos = require('../mock-data/all-todos.json');
 
 TodoModel.create = jest.fn();
 TodoModel.find = jest.fn();
+TodoModel.findById = jest.fn()
 
 let req, res, next;
 
 beforeEach(() => {
+    jest.clearAllMocks();
     req = httpMocks.createRequest();
     res = httpMocks.createResponse();
     next = jest.fn();
+    TodoModel.find.mockResolvedValue(allTodos);
+    TodoModel.create.mockResolvedValue(newTodo);
 });
 
 describe('TodoController.getTodos', () => {
@@ -64,4 +68,35 @@ describe('TodoController.createTodo', () => {
         await TodoController.createTodo(req, res, next);
         expect(next).toHaveBeenCalledWith(errorMessage);
     })
+})
+
+describe("TodoController.getTodoById", () => {
+    it('should have a getTodoById', () => {
+        expect(typeof TodoController.getTodoById).toBe('function')
+    })
+    it("Should call TodoModel.findbyid with route parameters", async () => {
+        req.params.todoId = "69ef71fde1ee685ba8448233"
+        await TodoController.getTodoById(req, res, next)
+        expect(TodoModel.findById).toHaveBeenCalledWith("69ef71fde1ee685ba8448233")
+    })
+    it('should return json body and response code 200', async () => {
+        TodoModel.findById.mockResolvedValue(newTodo);
+        await TodoController.getTodoById(req, res, next);
+        expect(res.statusCode).toBe(200);
+        expect(res._isEndCalled()).toBeTruthy();
+        expect(res._getJSONData()).toStrictEqual(newTodo);
+    }) 
+    it('should handle errors in getTodoById', async () => {
+        const errorMessage = { message: 'error finding todoModel' };
+        const rejectPromise = Promise.reject(errorMessage);
+        TodoModel.findById.mockReturnValue(rejectPromise);
+        await TodoController.getTodoById(req, res, next);
+        expect(next).toHaveBeenCalledWith(errorMessage);
+    });
+    it('should return 404 when item is not found', async () => {
+        TodoModel.findById.mockResolvedValue(null);
+        await TodoController.getTodoById(req, res, next);
+        expect(res.statusCode).toBe(404);
+        expect(res._isEndCalled()).toBeTruthy();
+    });
 })
