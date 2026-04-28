@@ -3,6 +3,11 @@ const todoRoutes = require('./routes/todo.routes');
 const app = express();
 const mongodd = require('./mongodb/mongodb.connect')
 
+const swaggerUi = require('swagger-ui-express');
+const fs = require('fs');
+const yaml = require('js-yaml');
+const swaggerDocument = yaml.load(fs.readFileSync('./swagger.yaml', 'utf8'));
+
 mongodd.connect();
 
 app.use((req, res, next) => {
@@ -18,12 +23,10 @@ app.use(express.json());
 
 app.use('/todos', todoRoutes);
 
-app.get('/', (req, res) => {
-  res.send('exoress test');
+app.get('/health', (req, res) => {
+  res.status(200).json({"status": "ok"});
 });
 
-//app.listen(3000, () => {
-//  console.log('Server is running on port 3000');
-//});
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 module.exports = app;

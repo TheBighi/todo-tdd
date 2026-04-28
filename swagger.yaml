@@ -1,0 +1,111 @@
+openapi: 3.0.0
+info:
+  title: Todo API
+  version: 1.0.0
+  description: API for managing todo items
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        200:
+          description: Health check successful
+  /todos:
+    get:
+      summary: Get all todos
+      responses:
+        200:
+          description: Got all todos
+    post:
+      summary: Post a todo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Example todo
+                done:
+                  type: boolean
+                  example: false
+      responses:
+        201:
+          description: Created Todo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  title:
+                    type: string
+                  done:
+                    type: boolean
+  /todos/{todoId}:
+    get:
+      summary: Get todo by ID
+      parameters:
+      - in: path
+        name: todoId
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Got correct todo by ID
+        404:
+          description: Todo not found
+    put:
+      summary: updates a todo
+      parameters:
+      - in: path
+        name: todoId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Example changed todo
+                done:
+                  type: boolean
+                  example: false
+      responses:
+        200:
+          description: Created Todo
+          content:
+            application/json:
+              schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                title:
+                  type: string
+                done:
+                  type: boolean
+        404:
+          description: Todo not found
+    delete:
+      summary: Deletes todo by id
+      parameters:
+      - in: path
+        name: todoId
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Todo deleted
+        404:
+          description: Todo not found

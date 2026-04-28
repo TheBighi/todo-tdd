@@ -1,12 +1,14 @@
 const express = require('express');
 const todoController = require('../controllers/todo.controller');
+const swaggerUi = require('swagger-ui-express');
 
 const router = express.Router();
 
+
 router.post('/', todoController.createTodo);
 router.get('/', todoController.getTodos);
-router.get('/:todoId', todoController.getTodoById)
+router.get('/:todoId', todoController.getTodoById);
 router.put('/:todoId', todoController.updateTodo);
-router.delete('/:todoId', todoController.findByIdAndDelete)
+router.delete('/:todoId', todoController.findByIdAndDelete);
 
 module.exports = router;
